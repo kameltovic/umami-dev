@@ -6,6 +6,7 @@ import { Avatar } from '@/components/common/Avatar';
 import { Empty } from '@/components/common/Empty';
 import { IconLabel } from '@/components/common/IconLabel';
 import Link from '@/components/common/Link';
+import { TypeIcon } from '@/components/common/TypeIcon';
 import {
   useCountryNames,
   useLocale,
@@ -189,6 +190,11 @@ export function RealtimeLog({ data }: { data: any }) {
           <Text truncate>{getDetail(row)}</Text>
         </IconLabel>
         <Row gap="2" alignItems="center" paddingRight="2">
+          {row.country && (
+            <span title={countryNames[row.country] || row.country}>
+              <TypeIcon type="country" value={row.country} />
+            </span>
+          )}
           {isGoogle(row.referrerDomain) && <GoogleIcon />}
           {local && <Badge color={ORIGIN_COLORS.local}>{row.hostname}</Badge>}
           {row.isOwner && <Badge color={ORIGIN_COLORS.you}>you</Badge>}
