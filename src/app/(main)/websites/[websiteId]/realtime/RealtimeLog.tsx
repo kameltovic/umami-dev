@@ -170,11 +170,10 @@ export function RealtimeLog({ data }: { data: any }) {
         style={{
           ...style,
           minWidth: 0,
-          ...(local && {
-            background: 'rgba(245, 158, 11, 0.12)',
-            boxShadow: 'inset 3px 0 #f59e0b',
-          }),
-          ...(!local && row.isOwner && { boxShadow: `inset 3px 0 ${ORIGIN_COLORS.you}` }),
+          boxSizing: 'border-box',
+          paddingLeft: 8,
+          borderLeft: `3px solid ${local ? ORIGIN_COLORS.local : row.isOwner ? ORIGIN_COLORS.you : ORIGIN_COLORS.external}`,
+          background: local ? `${ORIGIN_COLORS.local}1f` : undefined,
         }}
         gap
       >
