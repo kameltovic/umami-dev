@@ -5,11 +5,13 @@ import { useLocale, useMessages } from '@/components/hooks';
 import { renderDateLabels } from '@/lib/charts';
 import { getThemeColors } from '@/lib/colors';
 import { generateTimeSeries } from '@/lib/date';
+import { ORIGIN_COLORS } from '@/lib/origin';
 
 export interface PageviewsChartProps extends BarChartProps {
   data: {
     pageviews: any[];
     sessions: any[];
+    origins?: { x: string; origin: string; y: number }[];
     compare?: {
       pageviews: any[];
       sessions: any[];
@@ -26,6 +28,29 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
 
   const chartData: any = useMemo(() => {
     if (!data) return;
+
+    if (data.origins) {
+      return {
+        __id: Date.now(),
+        datasets: Object.entries(ORIGIN_COLORS).map(([origin, color]) => ({
+          type: 'bar',
+          label: origin,
+          data: generateTimeSeries(
+            data.origins.filter(n => n.origin === origin),
+            minDate,
+            maxDate,
+            unit,
+            dateLocale,
+          ),
+          barPercentage: 0.9,
+          categoryPercentage: 0.9,
+          backgroundColor: `${color}99`,
+          hoverBackgroundColor: color,
+          borderColor: color,
+          borderWidth: 1,
+        })),
+      };
+    }
 
     return {
       __id: Date.now(),
@@ -92,6 +117,7 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
       minDate={minDate}
       maxDate={maxDate}
       renderXLabel={renderXLabel}
+      stacked={props.stacked ?? !!data?.origins}
       height="400px"
     />
   );

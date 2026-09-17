@@ -20,6 +20,7 @@ import { Eye, User } from '@/components/icons';
 import { FilterButtons } from '@/components/input/FilterButtons';
 import { Lightning } from '@/components/svg';
 import { BROWSERS, OS_NAMES } from '@/lib/constants';
+import { isGoogle, isLocalHost, ORIGIN_COLORS } from '@/lib/origin';
 
 const TYPE_ALL = 'all';
 const TYPE_PAGEVIEW = 'pageview';
@@ -27,10 +28,6 @@ const TYPE_SESSION = 'session';
 const TYPE_EVENT = 'event';
 const MAX_LIST_HEIGHT = 500;
 const ROW_HEIGHT = 50;
-
-export const isGoogle = (domain?: string) => /(^|\.)google\.[a-z.]+$/.test(domain || '');
-const isLocal = (host?: string) =>
-  /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)(:\d+)?$|\.localhost(:\d+)?$/.test(host || '');
 
 export const GoogleIcon = () => (
   <svg viewBox="0 0 48 48" width="16" height="16" aria-label="Google" role="img">
@@ -166,7 +163,7 @@ export function RealtimeLog({ data }: { data: any }) {
 
   const TableRow = ({ index, style, logs }: RowComponentProps<{ logs: any[] }>) => {
     const row = logs[index];
-    const local = isLocal(row.hostname);
+    const local = isLocalHost(row.hostname);
     return (
       <Row
         alignItems="center"
@@ -177,7 +174,7 @@ export function RealtimeLog({ data }: { data: any }) {
             background: 'rgba(245, 158, 11, 0.12)',
             boxShadow: 'inset 3px 0 #f59e0b',
           }),
-          ...(row.isOwner && { boxShadow: 'inset 3px 0 #8b5cf6' }),
+          ...(!local && row.isOwner && { boxShadow: `inset 3px 0 ${ORIGIN_COLORS.you}` }),
         }}
         gap
       >
@@ -194,8 +191,8 @@ export function RealtimeLog({ data }: { data: any }) {
         </IconLabel>
         <Row gap="2" alignItems="center" paddingRight="2">
           {isGoogle(row.referrerDomain) && <GoogleIcon />}
-          {local && <Badge color="#d97706">{row.hostname}</Badge>}
-          {row.isOwner && <Badge color="#7c3aed">you</Badge>}
+          {local && <Badge color={ORIGIN_COLORS.local}>{row.hostname}</Badge>}
+          {row.isOwner && <Badge color={ORIGIN_COLORS.you}>you</Badge>}
         </Row>
       </Row>
     );

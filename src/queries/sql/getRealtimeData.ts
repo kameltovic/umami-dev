@@ -1,5 +1,6 @@
 import type { QueryFilters, RealtimeActivity, RealtimeData, RealtimeEvent } from '@/lib/types';
 import { getRealtimeActivity } from '@/queries/sql/getRealtimeActivity';
+import { getPageviewOrigins } from '@/queries/sql/pageviews/getPageviewOrigins';
 import { getPageviewStats } from '@/queries/sql/pageviews/getPageviewStats';
 import { getSessionStats } from '@/queries/sql/sessions/getSessionStats';
 
@@ -17,10 +18,11 @@ export async function getRealtimeData(
   websiteId: string,
   filters: QueryFilters,
 ): Promise<RealtimeData> {
-  const [activity, pageviews, sessions] = await Promise.all([
+  const [activity, pageviews, sessions, origins] = await Promise.all([
     getRealtimeActivity(websiteId, filters),
     getPageviewStats(websiteId, filters),
     getSessionStats(websiteId, filters),
+    getPageviewOrigins(websiteId, filters),
   ]);
 
   const uniques = new Set();
@@ -68,6 +70,7 @@ export async function getRealtimeData(
     series: {
       views: pageviews,
       visitors: sessions,
+      origins,
     },
     totals: {
       views: pageviews.reduce((sum: number, { y }: { y: number }) => Number(sum) + Number(y), 0),

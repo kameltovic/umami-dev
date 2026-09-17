@@ -26,6 +26,9 @@ export function RealtimeChart({ data, unit, ...props }: RealtimeChartProps) {
     return {
       pageviews: formatSeriesTimezone(data.series.views, 'x', timezone),
       sessions: formatSeriesTimezone(data.series.visitors, 'x', timezone),
+      origins: data.series.origins?.length
+        ? formatSeriesTimezone(data.series.origins, 'x', timezone)
+        : undefined,
     };
   }, [data, startDate, endDate, unit]);
 

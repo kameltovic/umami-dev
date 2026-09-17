@@ -324,6 +324,7 @@ export interface RealtimeData {
   series: {
     views: EventDataSeriesPoint[];
     visitors: EventDataSeriesPoint[];
+    origins?: { x: string; origin: string; y: number }[];
   };
   totals: {
     views: number;

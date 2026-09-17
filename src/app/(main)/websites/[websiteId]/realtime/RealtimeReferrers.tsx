@@ -2,7 +2,8 @@ import { firstBy } from 'thenby';
 import { useMessages, useWebsite } from '@/components/hooks';
 import { ListTable } from '@/components/metrics/ListTable';
 import { percentFilter } from '@/lib/filters';
-import { GoogleIcon, isGoogle } from './RealtimeLog';
+import { isGoogle } from '@/lib/origin';
+import { GoogleIcon } from './RealtimeLog';
 
 export function RealtimeReferrers({ data }: { data: any }) {
   const website = useWebsite();
