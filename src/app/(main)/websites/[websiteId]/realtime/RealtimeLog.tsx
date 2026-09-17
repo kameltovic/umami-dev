@@ -1,5 +1,5 @@
 import { Column, Heading, Row, SearchField, Text } from '@umami/react-zen';
-import { useMemo, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 import { List, type RowComponentProps } from 'react-window';
 import { SessionModal } from '@/app/(main)/websites/[websiteId]/sessions/SessionModal';
 import { Avatar } from '@/components/common/Avatar';
@@ -27,6 +27,47 @@ const TYPE_SESSION = 'session';
 const TYPE_EVENT = 'event';
 const MAX_LIST_HEIGHT = 500;
 const ROW_HEIGHT = 50;
+
+export const isGoogle = (domain?: string) => /(^|\.)google\.[a-z.]+$/.test(domain || '');
+const isLocal = (host?: string) =>
+  /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)(:\d+)?$|\.localhost(:\d+)?$/.test(host || '');
+
+export const GoogleIcon = () => (
+  <svg viewBox="0 0 48 48" width="16" height="16" aria-label="Google" role="img">
+    <path
+      fill="#EA4335"
+      d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.5 30.2 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.8 6C12.3 13.6 17.7 9.5 24 9.5z"
+    />
+    <path
+      fill="#4285F4"
+      d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.5 5.8c4.4-4 6.8-10 6.8-17.2z"
+    />
+    <path
+      fill="#FBBC05"
+      d="M10.4 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.3.8-4.7l-7.8-6C.9 16.6 0 20.2 0 24s.9 7.4 2.6 10.7l7.8-6z"
+    />
+    <path
+      fill="#34A853"
+      d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.7-4.1-13.6-9.8l-7.8 6C6.6 42.6 14.6 48 24 48z"
+    />
+  </svg>
+);
+
+const Badge = ({ children, color }: { children: ReactNode; color: string }) => (
+  <span
+    style={{
+      fontSize: 11,
+      fontWeight: 600,
+      padding: '1px 6px',
+      borderRadius: 999,
+      color: '#fff',
+      background: color,
+      whiteSpace: 'nowrap',
+    }}
+  >
+    {children}
+  </span>
+);
 
 const icons = {
   [TYPE_PAGEVIEW]: <Eye />,
@@ -125,8 +166,21 @@ export function RealtimeLog({ data }: { data: any }) {
 
   const TableRow = ({ index, style, logs }: RowComponentProps<{ logs: any[] }>) => {
     const row = logs[index];
+    const local = isLocal(row.hostname);
     return (
-      <Row alignItems="center" style={{ ...style, minWidth: 0 }} gap>
+      <Row
+        alignItems="center"
+        style={{
+          ...style,
+          minWidth: 0,
+          ...(local && {
+            background: 'rgba(245, 158, 11, 0.12)',
+            boxShadow: 'inset 3px 0 #f59e0b',
+          }),
+          ...(row.isOwner && { boxShadow: 'inset 3px 0 #8b5cf6' }),
+        }}
+        gap
+      >
         <Row minWidth="30px">
           <Link href={updateParams({ session: row.sessionId })}>
             <Avatar seed={row.sessionId} size={32} />
@@ -138,6 +192,11 @@ export function RealtimeLog({ data }: { data: any }) {
         <IconLabel icon={getIcon(row)} style={{ minWidth: 0, flex: 1 }}>
           <Text truncate>{getDetail(row)}</Text>
         </IconLabel>
+        <Row gap="2" alignItems="center" paddingRight="2">
+          {isGoogle(row.referrerDomain) && <GoogleIcon />}
+          {local && <Badge color="#d97706">{row.hostname}</Badge>}
+          {row.isOwner && <Badge color="#7c3aed">you</Badge>}
+        </Row>
       </Row>
     );
   };

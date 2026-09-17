@@ -8,11 +8,18 @@ import { getClientInfo, hasBlockedIp } from '@/lib/detect';
 import { truncateString } from '@/lib/format';
 import { createToken, parseToken } from '@/lib/jwt';
 import { fetchWebsite } from '@/lib/load';
+import { isOwnerIp, markOwnerSession } from '@/lib/owner';
 import { parseRequest } from '@/lib/request';
 import { badRequest, forbidden, json, serverError } from '@/lib/response';
 import { anyObjectParam, urlOrPathParam } from '@/lib/schema';
 import { safeDecodeURI, safeDecodeURIComponent } from '@/lib/url';
-import { createSession, saveEvent, saveSessionData, saveSessionLink, updateSession } from '@/queries/sql';
+import {
+  createSession,
+  saveEvent,
+  saveSessionData,
+  saveSessionLink,
+  updateSession,
+} from '@/queries/sql';
 
 interface Cache {
   websiteId: string;
@@ -179,6 +186,10 @@ export async function POST(request: Request) {
         distinctId,
         createdAt,
       });
+    }
+
+    if (!clickhouse.enabled && websiteId && isOwnerIp(ip)) {
+      await markOwnerSession(websiteId, sessionId);
     }
 
     // Visit info

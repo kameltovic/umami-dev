@@ -345,6 +345,7 @@ export interface RealtimeActivity {
   urlPath: string;
   referrerDomain: string;
   hostname: string;
+  isOwner?: boolean;
 }
 
 export interface RealtimeEvent extends RealtimeActivity {

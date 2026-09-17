@@ -32,6 +32,7 @@ async function relationalQuery(websiteId: string, filters: QueryFilters) {
         session.os,
         session.device,
         session.country,
+        session.is_owner as "isOwner",
         website_event.url_path as "urlPath",
         website_event.referrer_domain as "referrerDomain",
         website_event.hostname

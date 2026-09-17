@@ -64,6 +64,7 @@ model Session {
   region     String?   @db.VarChar(20)
   city       String?   @db.VarChar(50)
   distinctId String?   @map("distinct_id") @db.VarChar(50)
+  isOwner    Boolean   @default(false) @map("is_owner")
   createdAt  DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
 
   websiteEvents WebsiteEvent[]

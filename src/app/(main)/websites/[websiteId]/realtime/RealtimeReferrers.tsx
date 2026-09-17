@@ -1,7 +1,8 @@
+import { firstBy } from 'thenby';
 import { useMessages, useWebsite } from '@/components/hooks';
 import { ListTable } from '@/components/metrics/ListTable';
 import { percentFilter } from '@/lib/filters';
-import { firstBy } from 'thenby';
+import { GoogleIcon, isGoogle } from './RealtimeLog';
 
 export function RealtimeReferrers({ data }: { data: any }) {
   const website = useWebsite();
@@ -13,7 +14,7 @@ export function RealtimeReferrers({ data }: { data: any }) {
     const domain = x.startsWith('/') ? website?.domain : '';
     return (
       <a href={`//${domain}${x}`} target="_blank" rel="noreferrer noopener">
-        {x}
+        {isGoogle(x) && <GoogleIcon />} {x}
       </a>
     );
   };

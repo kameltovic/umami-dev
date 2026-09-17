@@ -15,7 +15,9 @@ import {
   SHARE_TOKEN_TYPE,
 } from '@/lib/constants';
 import { createAuthKey, hash, secret } from '@/lib/crypto';
+import { getIpAddress } from '@/lib/ip';
 import { createSecureToken, parseSecureToken, parseToken } from '@/lib/jwt';
+import { rememberOwnerIp } from '@/lib/owner';
 import redis from '@/lib/redis';
 import { ensureArray } from '@/lib/utils';
 import { getApiKeyByHash, updateApiKeyLastUsed } from '@/queries/prisma/apiKey';
@@ -133,6 +135,7 @@ export async function checkAuth(request: Request) {
   }
 
   if (user) {
+    rememberOwnerIp(getIpAddress(request.headers));
     delete user.password;
     user.isAdmin = user.role === ROLES.admin;
   }
